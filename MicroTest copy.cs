@@ -26,7 +26,8 @@ namespace Micro
     //comps of the pack
     public class Mincho_Dodge : Verb
     {
-
+        
+        public static IntVec3 Mincho_DodgeTarget;
 
         private float cachedEffectiveRange = -1f;
 
@@ -53,8 +54,32 @@ namespace Micro
             IntVec3 cell = this.currentTarget.Cell;
             Map map = casterPawn.Map;
             ReloadableCompSource.UsedOnce();
+            //<======================================================================================>  
+            //<======================================================================================>  
+
+
+
+
+
+
+
 
             //visial fix
+            bool Settings = true;
+            if (Settings) { casterPawn.rotationTracker.FaceCell(cell); }
+
+
+
+
+
+
+
+
+
+
+
+            //<======================================================================================>  
+            //<======================================================================================>            
             //This part was changed makes the code idenpendent from Royalty
             PawnFlyer newThing = PawnFlyer.MakeFlyer(BoosterActivedDefOf.Micro_PawnSkipper, casterPawn, cell);
 
@@ -71,7 +96,7 @@ namespace Micro
 
 
             //reloadableCompSource.UsedOnce(); is moved from TryCastShot to here to balance in case player tries to cheat the system by repetedly skip but than cancle the action
-
+            Mincho_DodgeTarget = intVec3;
             //This part were changed makes the code idenpendent from Royalty
             Job job = JobMaker.MakeJob(BoosterActivedDefOf.Micro_CastSkip, (LocalTargetInfo)intVec3);  
             job.verbToUse = (Verb)this;
@@ -118,15 +143,17 @@ namespace Micro
     //Job_Drivers
     public class Micro_CastSkip : JobDriver_CastVerbOnceStatic
     {
+
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             this.pawn.Map.pawnDestinationReservationManager.Reserve(this.pawn, this.job, this.job.targetA.Cell);
 
             //This snippet of code was added to make the action happen instantanous
-            //All my codes should be kept inside this little box to prevent fuckups causing the code not to be ran
+            //All my questioanble codes should be kept inside this little try()catch() box to prevent fuckups causing the entire code not to be ran
+            pawn.stances.CancelBusyStanceHard();
             try
             {
-                pawn.stances.CancelBusyStanceHard();
+
             }
             catch (Exception excpetion)
             {
