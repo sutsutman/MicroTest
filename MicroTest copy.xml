@@ -1,0 +1,276 @@
+<Defs>
+
+  <StatDef>
+	<defName>Mincho_SpaceBoosterSkipRadius</defName>
+    <label>Mincho_SpaceBoosterSkip radius</label>
+    <description>The Maxium distance that a Booster can skip.</description>
+    <category>Apparel</category>
+    <minValue>0</minValue>
+    <toStringStyle>FloatOne</toStringStyle>
+    <formatString>{0} c</formatString>
+    <showIfUndefined>false</showIfUndefined>
+    <displayPriorityInCategory>60</displayPriorityInCategory>
+    <parts>
+      <li Class="StatPart_Quality">
+        <factorAwful>1.5</factorAwful>
+        <factorPoor>2.2</factorPoor>
+        <factorNormal>2.7</factorNormal>
+        <factorGood>3.2</factorGood>
+        <factorExcellent>3.6</factorExcellent>
+        <factorMasterwork>4.2</factorMasterwork>
+        <factorLegendary>5</factorLegendary>
+      </li>
+    </parts>
+  </StatDef>
+
+    <!--Random Stuff that was inheited-->
+	<ThingCategoryDef>
+		<defName>Mincho_Apparel</defName>
+		<label>mincho apparel</label>
+		<parent>Apparel</parent>
+	</ThingCategoryDef>
+
+	<ThingDef Name="Mincho_ApparelBase" ParentName="ApparelMakeableBase" Abstract="True">
+		<thingCategories>
+			<li>Mincho_Apparel</li>
+		</thingCategories>
+		<!--========== Graphic Data ==========-->
+		<graphicData>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<tradeability>Sellable</tradeability>
+		<!--========== Apparel ==========-->
+		<apparel>
+			<defaultOutfitTags>
+				<li>Soldier</li>
+				<li>Worker</li>
+			</defaultOutfitTags>
+			<tags>
+				<li>RoyalTier7</li>
+			</tags>
+		</apparel>
+		<recipeMaker>
+			<recipeUsers>
+				<li>Mincho_MinchoBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<colorGenerator Class="ColorGenerator_StandardApparel" />
+	</ThingDef>
+
+	<!-- 옷 베이스 -->
+	<ThingDef Name="Mincho_ApparelBase_Body" ParentName="Mincho_ApparelBase" Abstract="True">
+		<apparel>
+			<bodyPartGroups>
+				<li>Torso</li>
+				<li>Neck</li>
+				<li>Shoulders</li>
+				<li>Arms</li>
+				<li>Legs</li>
+			</bodyPartGroups>
+		</apparel>
+	</ThingDef>
+
+	<!-- 모자 베이스 -->
+	<ThingDef Name="Mincho_ApparelBase_Hat" ParentName="Mincho_ApparelBase" Abstract="True">
+		<apparel>
+			<!--<hatRenderedFrontOfFace>true</hatRenderedFrontOfFace>-->
+			<bodyPartGroups>
+				<li>FullHead</li>
+			</bodyPartGroups>
+			<layers>
+				<li>Overhead</li>
+			</layers>
+		</apparel>
+	</ThingDef>
+
+    <!--The impoartant stuff-->
+
+	<ThingDef ParentName="Mincho_ApparelBase_Body">
+		<defName>Mincho_SpaceBooster</defName>
+		<description>The booster worn by Mincho to move faster in space. Space suits must be worn together to prevent heat from the booster.\n\nEven if it's not only because of the heat, when worn bare, the booster may penetrate the slime body of Mincho and fly far away.\n\nSome one called this "Wife maker", because even though in space, Mincho wears the booster and comes and makes a wife.</description>
+		<descriptionHyperlinks>
+		</descriptionHyperlinks>
+		<label>Mincho space booster</label>
+		<!--========== Graphic Data ==========-->
+		<graphicData>
+			<texPath>Mincho_Apparel/Mincho_SpaceBooster/Texture/Texture</texPath>
+		</graphicData>
+		<!--========== Crafting ==========-->
+		<costList>
+			<ComponentSpacer>2</ComponentSpacer>
+			<Plasteel>50</Plasteel>
+			<Uranium>10</Uranium>
+		</costList>
+		<!--========== Stat Base ==========-->
+		<statBases>
+			<MaxHitPoints>280</MaxHitPoints>
+			<WorkToMake>40000</WorkToMake>
+			<Mass>1</Mass>
+			<ArmorRating_Sharp>0.4</ArmorRating_Sharp>
+			<ArmorRating_Blunt>0.4</ArmorRating_Blunt>
+			<EquipDelay>5</EquipDelay>
+		</statBases>
+		<equippedStatOffsets>
+			<MoveSpeed>2</MoveSpeed>
+		</equippedStatOffsets>
+		<!--========== Apparel ==========-->
+		<apparel>
+			<wornGraphicPath>Mincho_Apparel/Mincho_SpaceBooster/Texture/Texture</wornGraphicPath>
+			<useWornGraphicMask>true</useWornGraphicMask>
+			<layers>
+				<li>Shell</li>
+				<!--
+			    <li>OnSkin</li>
+			    <li>Middle</li>
+			    <li>Shell</li>
+			    <li>Belt</li>
+			    <li>Overhead</li>
+			    -->
+			</layers>
+			<tags>
+				<li>PrestigeCombatGear</li>
+			</tags>
+		</apparel>
+		<colorGenerator Class="ColorGenerator_Options">
+			<options>
+				<li>
+					<weight>10</weight>
+					<only>RGBA(1,1,1,1)</only>
+				</li>
+			</options>
+		</colorGenerator>
+		<recipeMaker>
+			<unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
+			<researchPrerequisite>ReconArmor</researchPrerequisite>
+			<skillRequirements>
+				<Crafting>6</Crafting>
+			</skillRequirements>
+			<recipeUsers Inherit="False">
+				<li>FabricationBench</li>
+			</recipeUsers>
+		</recipeMaker>
+		<tradeTags>
+			<li>HiTechArmor</li>
+		</tradeTags>
+		<generateCommonality>2</generateCommonality>
+
+		<!--my stuff-->
+		<comps>
+      		<li Class="CompProperties_Reloadable">
+        		<maxCharges>3</maxCharges>
+        		<ammoDef>Chemfuel</ammoDef>
+        		<ammoCountToRefill>10</ammoCountToRefill>
+        		<baseReloadTicks>60</baseReloadTicks>
+        		<soundReload>Standard_Reload</soundReload>
+        		<hotKey>Misc4</hotKey>
+        		<chargeNoun>smokepop</chargeNoun>
+        		<displayGizmoWhileUndrafted>false</displayGizmoWhileUndrafted>
+      		</li>
+    	</comps>
+    	<verbs>
+      		<li>
+        		<verbClass>Micro.Mincho_Dodge</verbClass>
+        		<label>jump</label>
+        		<commandIcon>Things/Pawn/Humanlike/Apparel/JumpPack/JumpPack</commandIcon>
+        		<violent>false</violent>
+        		<hasStandardCommand>true</hasStandardCommand>
+        		<onlyManualCast>True</onlyManualCast>
+        		<forceNormalTimeSpeed>false</forceNormalTimeSpeed>
+        		<warmupTime>0</warmupTime>
+        		<warmupEffecter>Mincro_WarmupEffect</warmupEffecter>
+        		<requireLineOfSight>true</requireLineOfSight>
+        		<targetParams>
+          			<canTargetLocations>true</canTargetLocations>
+          			<canTargetPawns>false</canTargetPawns>
+          			<canTargetBuildings>false</canTargetBuildings>
+        		</targetParams>
+      		</li>
+    	</verbs>
+	</ThingDef>
+
+  	<JobDef>
+    	<defName>Micro_CastSkip</defName>
+    	<driverClass>Micro.Micro_CastSkip</driverClass>
+    	<allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    	<carryThingAfterJob>true</carryThingAfterJob>
+    	<dropThingBeforeJob>false</dropThingBeforeJob>
+  	</JobDef>
+
+	<!--I don't really know what those is doing , but it seems to be nessary if it is going to be independent from Royalty-->
+  <ThingDef ParentName="PawnFlyerBase">
+    <defName>Micro_PawnSkipper</defName>
+    <thingClass>Micro.Micro_Skipper</thingClass>
+    <pawnFlyer>
+      <flightDurationMin>0.1</flightDurationMin>
+      <flightSpeed>5</flightSpeed>
+      <flightEffecterDef>Micro_SkipFlightEffect</flightEffecterDef>
+      <soundLanding>JumpPackLand</soundLanding>
+    </pawnFlyer>
+  </ThingDef>
+	
+	
+	<!--EffecterDef for the entire process-->
+  <EffecterDef>
+    <defName>Mincro_WarmupEffect</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SoundTriggered</subEffecterClass>
+        <spawnLocType>OnSource</spawnLocType>
+        <soundDef>JumpPackPreLaunch</soundDef>
+      </li>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggeredDelayed</subEffecterClass>
+        <spawnLocType>OnSource</spawnLocType>
+        <fleckDef>Micro_SkipSlime</fleckDef>
+        <initialDelayTicks>1</initialDelayTicks>
+        <speed>4~5</speed>
+        <angle>170~190</angle>
+        <absoluteAngle>true</absoluteAngle>
+      </li>
+    </children>
+  </EffecterDef>
+
+  <EffecterDef>
+    <defName>Micro_SkipFlightEffect</defName>
+    <children>
+      <li>
+        <subEffecterClass>SubEffecter_SoundTriggered</subEffecterClass>
+        <spawnLocType>OnSource</spawnLocType>
+        <soundDef>JumpPackLaunch</soundDef>
+      </li>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerTriggered</subEffecterClass>
+        <spawnLocType>OnSource</spawnLocType>
+        <fleckDef>ShotFlash</fleckDef>
+        <scale>2</scale>
+      </li>
+      <li>
+        <subEffecterClass>SubEffecter_SprayerContinuous</subEffecterClass>
+        <scale>0.5~0.6</scale>
+        <spawnLocType>OnSource</spawnLocType>
+        <positionOffset>(0,0,-0.5)</positionOffset>
+        <fleckDef>Micro_SkipSlime</fleckDef>
+        <ticksBetweenMotes>1</ticksBetweenMotes>
+        <maxMoteCount>14</maxMoteCount>
+        <speed>4~5</speed>
+        <angle>180~200</angle>
+        <absoluteAngle>true</absoluteAngle>
+      </li>
+    </children>
+  </EffecterDef>
+
+  <!--fleckDef for the booster activation and the fly time-->
+
+    <FleckDef ParentName="FleckBase_Thrown">
+    <defName>Micro_SkipSlime</defName>
+    <graphicData>
+      <texPath>Things/Mote/JumpFlame</texPath>
+      <shaderType>TransparentPostLight</shaderType>
+      <renderInstanced>true</renderInstanced>
+    </graphicData>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <solidTime>0</solidTime>
+    <fadeOutTime>0.1</fadeOutTime>
+    <growthRate>-4</growthRate>
+  </FleckDef>
+</Defs>
