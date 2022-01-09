@@ -147,19 +147,8 @@ namespace Micro
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             this.pawn.Map.pawnDestinationReservationManager.Reserve(this.pawn, this.job, this.job.targetA.Cell);
-
             //This snippet of code was added to make the action happen instantanous
-            //All my questioanble codes should be kept inside this little try()catch() box to prevent fuckups causing the entire code not to be ran
             pawn.stances.CancelBusyStanceHard();
-            try
-            {
-
-            }
-            catch (Exception excpetion)
-            {
-                Log.Warning(excpetion.ToString());
-            }
-
             return true;
         }
     }
