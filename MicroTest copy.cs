@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using HarmonyLib;
 using RimWorld;
+using System;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -26,7 +22,6 @@ namespace Micro
     //comps of the pack
     public class Mincho_Dodge : Verb
     {
-        
         public static IntVec3 Mincho_DodgeTarget;
 
         private float cachedEffectiveRange = -1f;
@@ -37,7 +32,9 @@ namespace Micro
             {
                 //This part makes the code get the defs for Mincho_SpaceBooster
                 if ((double)this.cachedEffectiveRange < 0.0)
+                {
                     this.cachedEffectiveRange = this.EquipmentSource.GetStatValue(BoosterActivedDefOf.Mincho_SpaceBoosterSkipRadius);
+                }
                 return this.cachedEffectiveRange;
             }
         }
@@ -50,41 +47,23 @@ namespace Micro
             Pawn casterPawn = this.CasterPawn;
             //it is changed to fix a bug that if it has 0 fuel it cannot run
             if (casterPawn == null || reloadableCompSource == null || !reloadableCompSource.CanBeUsed)
+            {
                 return false;
+            }
             IntVec3 cell = this.currentTarget.Cell;
             Map map = casterPawn.Map;
             ReloadableCompSource.UsedOnce();
-            //<======================================================================================>  
-            //<======================================================================================>  
-
-
-
-
-
-
-
-
-            //visial fix
-            bool Settings = true;
-            if (Settings) { casterPawn.rotationTracker.FaceCell(cell); }
-
-
-
-
-
-
-
-
-
-
-
-            //<======================================================================================>  
-            //<======================================================================================>            
+            if (Micro_Setting.BoosterRot)
+            {
+                casterPawn.rotationTracker.FaceCell(cell);
+            }
             //This part was changed makes the code idenpendent from Royalty
             PawnFlyer newThing = PawnFlyer.MakeFlyer(BoosterActivedDefOf.Micro_PawnSkipper, casterPawn, cell);
 
             if (newThing == null)
+            {
                 return false;
+            }
             GenSpawn.Spawn((Thing)newThing, cell, map);
             return true;
         }
@@ -98,10 +77,12 @@ namespace Micro
             //reloadableCompSource.UsedOnce(); is moved from TryCastShot to here to balance in case player tries to cheat the system by repetedly skip but than cancle the action
             Mincho_DodgeTarget = intVec3;
             //This part were changed makes the code idenpendent from Royalty
-            Job job = JobMaker.MakeJob(BoosterActivedDefOf.Micro_CastSkip, (LocalTargetInfo)intVec3);  
+            Job job = JobMaker.MakeJob(BoosterActivedDefOf.Micro_CastSkip, (LocalTargetInfo)intVec3);
             job.verbToUse = (Verb)this;
             if (!this.CasterPawn.jobs.TryTakeOrderedJob(job))
+            {
                 return;
+            }
             FleckMaker.Static(intVec3, map, FleckDefOf.FeedbackGoto);
 
             bool AcceptableDestination(IntVec3 c) => Mincho_Dodge.ValidJumpTarget(map, c) && this.CanHitTargetFrom(this.caster.Position, (LocalTargetInfo)c);
@@ -119,22 +100,30 @@ namespace Micro
         public override void OnGUI(LocalTargetInfo target)
         {
             if (this.CanHitTarget(target) && Mincho_Dodge.ValidJumpTarget(this.caster.Map, target.Cell))
+            {
                 base.OnGUI(target);
+            }
             else
+            {
                 GenUI.DrawMouseAttachment(TexCommand.CannotShoot);
+            }
         }
 
         public override void DrawHighlight(LocalTargetInfo target)
         {
             if (target.IsValid && Mincho_Dodge.ValidJumpTarget(this.caster.Map, target.Cell))
+            {
                 GenDraw.DrawTargetHighlightWithLayer(target.CenterVector3, AltitudeLayer.MetaOverlays);
+            }
             GenDraw.DrawRadiusRing(this.caster.Position, this.EffectiveRange, Color.white, (Func<IntVec3, bool>)(c => GenSight.LineOfSight(this.caster.Position, c, this.caster.Map) && Mincho_Dodge.ValidJumpTarget(this.caster.Map, c)));
         }
 
         public static bool ValidJumpTarget(Map map, IntVec3 cell)
         {
             if (!cell.IsValid || !cell.InBounds(map) || cell.Impassable(map) || !cell.Walkable(map) || cell.Fogged(map))
+            {
                 return false;
+            }
             Building edifice = cell.GetEdifice(map);
             return edifice == null || !(edifice is Building_Door buildingDoor) || buildingDoor.Open;
         }
@@ -143,7 +132,6 @@ namespace Micro
     //Job_Drivers
     public class Micro_CastSkip : JobDriver_CastVerbOnceStatic
     {
-
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             this.pawn.Map.pawnDestinationReservationManager.Reserve(this.pawn, this.job, this.job.targetA.Cell);
@@ -156,7 +144,7 @@ namespace Micro
     //Player flyer MicroTest_CastSkipper
     public class Micro_Skipper : PawnFlyer
     {
-        private static float Linermotion(float x) {return 0;}
+        private static float Linermotion(float x) { return 0; }
         private static readonly Func<float, float> FlightSpeed;
         private static readonly Func<float, float> FlightCurveHeight = new Func<float, float>(Micro_Skipper.Linermotion);
         private Material cachedShadowMaterial;
@@ -171,7 +159,9 @@ namespace Micro
             get
             {
                 if ((UnityEngine.Object)this.cachedShadowMaterial == (UnityEngine.Object)null && !this.def.pawnFlyer.shadow.NullOrEmpty())
+                {
                     this.cachedShadowMaterial = MaterialPool.MatFrom(this.def.pawnFlyer.shadow, ShaderDatabase.Transparent);
+                }
                 return this.cachedShadowMaterial;
             }
         }
@@ -199,7 +189,9 @@ namespace Micro
         private void RecomputePosition()
         {
             if (this.positionLastComputedTick == this.ticksFlying)
+            {
                 return;
+            }
             this.positionLastComputedTick = this.ticksFlying;
             float num = (float)this.ticksFlying / (float)this.ticksFlightTime;
             float t = Micro_Skipper.FlightSpeed(num);
@@ -223,7 +215,9 @@ namespace Micro
         {
             Material shadowMaterial = this.ShadowMaterial;
             if ((UnityEngine.Object)shadowMaterial == (UnityEngine.Object)null)
+            {
                 return;
+            }
             float num = Mathf.Lerp(1f, 0.6f, height);
             Vector3 s = new Vector3(num, 1f, num);
             Matrix4x4 matrix = new Matrix4x4();
@@ -245,14 +239,18 @@ namespace Micro
                 this.flightEffecter.Trigger((TargetInfo)(Thing)this, TargetInfo.Invalid);
             }
             else
+            {
                 this.flightEffecter?.EffectTick((TargetInfo)(Thing)this, TargetInfo.Invalid);
+            }
             base.Tick();
         }
 
         private void LandingEffects()
         {
             if (this.def.pawnFlyer.soundLanding != null)
+            {
                 this.def.pawnFlyer.soundLanding.PlayOneShot((SoundInfo)new TargetInfo(this.Position, this.Map));
+            }
             FleckMaker.ThrowDustPuff(this.DestinationPos + Gen.RandomHorizontalVector(0.5f), this.Map, 2f);
         }
 
@@ -262,6 +260,4 @@ namespace Micro
             base.Destroy(mode);
         }
     }
-
-
 }
