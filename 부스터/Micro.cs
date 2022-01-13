@@ -1,4 +1,4 @@
-﻿using RimWorld;
+using RimWorld;
 using System;
 using UnityEngine;
 using Verse;
@@ -46,6 +46,8 @@ namespace Micro
             CompReloadable reloadableCompSource = this.ReloadableCompSource;
             Pawn casterPawn = this.CasterPawn;
             //it is changed to fix a bug that if it has 0 fuel it cannot run
+
+
             if (casterPawn == null || reloadableCompSource == null || !reloadableCompSource.CanBeUsed)
             {
                 return false;
@@ -53,10 +55,12 @@ namespace Micro
             IntVec3 cell = this.currentTarget.Cell;
             Map map = casterPawn.Map;
             ReloadableCompSource.UsedOnce();
-            if (Micro_Setting.BoosterRot)
+            if (Micro_Setting.BoosterRot && casterPawn != null)
             {
                 casterPawn.rotationTracker.FaceCell(cell);
             }
+
+
             //This part was changed makes the code idenpendent from Royalty
             PawnFlyer newThing = PawnFlyer.MakeFlyer(BoosterActivedDefOf.Micro_PawnSkipper, casterPawn, cell);
 
@@ -132,12 +136,20 @@ namespace Micro
     //Job_Drivers
     public class Micro_CastSkip : JobDriver_CastVerbOnceStatic
     {
+        public bool DupeAvoidence;
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
+            
             this.pawn.Map.pawnDestinationReservationManager.Reserve(this.pawn, this.job, this.job.targetA.Cell);
-            //This snippet of code was added to make the action happen instantanous
-            pawn.stances.CancelBusyStanceHard();
+
+            //This snippet of code was added to make the action happen instantanous , by canceling all other stances
+            this.pawn.stances.SetStance((Stance)new Stance_Warmup(1, null, null));// This is bug free , but can cause major exploit
+            //if (pawn.stances.curStance is Stance_Cooldown || pawn.stances.curStance is Stance_Warmup) { pawn.stances.CancelBusyStanceHard(); }
+            //else { this.pawn.stances.SetStance((Stance)new Stance_Warmup(1, null, null)); }
+            //Disable the one that could cause exploit and (Ah this isn't working. , it worked , but I changed something , that I cannot remember)
+            //Enable the following two line of code and the 1 tick warmup would only be conditional , but it do have a chance to cause bugs
             return true;
+
         }
     }
 
@@ -197,6 +209,7 @@ namespace Micro
             float t = Micro_Skipper.FlightSpeed(num);
             this.effectiveHeight = Micro_Skipper.FlightCurveHeight(t);
             this.groundPos = Vector3.Lerp(this.startVec, this.DestinationPos, t);
+
             Vector3 vector3_1 = new Vector3(0.0f, 0.0f, 2f);
             Vector3 vector3_2 = Altitudes.AltIncVect * this.effectiveHeight;
             double effectiveHeight = (double)this.effectiveHeight;
@@ -206,9 +219,13 @@ namespace Micro
 
         public override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
-            this.RecomputePosition();
-            this.DrawShadow(this.groundPos, this.effectiveHeight);
-            this.FlyingPawn.DrawAt(this.effectivePos, flip);
+            try
+            {
+                this.RecomputePosition();
+                this.DrawShadow(this.groundPos, this.effectiveHeight);
+                this.FlyingPawn.DrawAt(this.effectivePos, flip);
+            }
+            catch (Exception e) { Log.Warning(e.ToString()); }
         }
 
         private void DrawShadow(Vector3 drawLoc, float height)
@@ -229,6 +246,7 @@ namespace Micro
         {
             this.LandingEffects();
             base.RespawnPawn();
+            //this.Destroy(DestroyMode.Vanish);  doesn't work already tried
         }
 
         public override void Tick()
@@ -247,6 +265,8 @@ namespace Micro
 
         private void LandingEffects()
         {
+
+            //this.FlyingPawn.stances.stunner.StunFor(60, this.FlyingPawn);
             if (this.def.pawnFlyer.soundLanding != null)
             {
                 this.def.pawnFlyer.soundLanding.PlayOneShot((SoundInfo)new TargetInfo(this.Position, this.Map));
